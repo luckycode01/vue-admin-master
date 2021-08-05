@@ -1,6 +1,5 @@
 module.exports = {
-
-  title: '谷粒商城后台管理',
+  title: "谷粒商城后台管理",
 
   /**
    * @type {boolean} true | false
@@ -13,4 +12,4 @@ module.exports = {
    * @description Whether show the logo in sidebar
    */
   sidebarLogo: false
-}
+};
