@@ -15,6 +15,10 @@ import router from "./router";
 import "@/icons"; // icon
 import "@/permission"; // permission control
 
+//注册全局组件
+import Category from "@/components/Category";
+Vue.component("Category", Category);
+
 import * as API from "@/api/product/index";
 Vue.prototype.$API = API;
 /**

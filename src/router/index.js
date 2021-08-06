@@ -72,7 +72,7 @@ export const constantRoutes = [
         path: "attr/list",
         name: "Attr",
         component: () => import("@/views/product/Attr/List"),
-        meta: { title: "属性管理" }
+        meta: { title: "平台属性管理" }
       },
       {
         path: "spu/list",
