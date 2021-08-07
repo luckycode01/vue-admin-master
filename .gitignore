@@ -7,6 +7,7 @@ yarn-error.log*
 package-lock.json
 tests/**/coverage/
 README_Interface.md
+02_Swagger接口列表.md
 
 # Editor directories and files
 .idea
