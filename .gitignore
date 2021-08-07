@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 tests/**/coverage/
-README_Interface.md
+README_interface.md
 
 # Editor directories and files
 .idea
