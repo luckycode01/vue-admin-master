@@ -18,6 +18,9 @@ import "@/permission"; // permission control
 //注册全局组件
 import Category from "@/components/Category";
 Vue.component("Category", Category);
+// 按钮组件二次封装
+import HintButton from "@/components/HintButton";
+Vue.component("HintButton", HintButton);
 
 import * as API from "@/api/product/index";
 Vue.prototype.$API = API;

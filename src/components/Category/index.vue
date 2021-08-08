@@ -52,7 +52,7 @@ export default {
       this.cateForm.category3Id = '';
 
       // 通知父组件，向父组件传递数据
-      this.$emit('changeCategory');
+      this.$emit('changeCategory', { categoryId: this.cateForm.category1Id, level: 1 });
 
       // 当选中一级分类时，拿着一级分类得id去请求二级分类
       const result = await this.$API.category.getCategory2(this.cateForm.category1Id);
@@ -65,7 +65,7 @@ export default {
       this.category3List = [];
       this.cateForm.category3Id = '';
       // 通知父组件，向父组件传递数据
-      this.$emit('changeCategory');
+      this.$emit('changeCategory', { categoryId: this.cateForm.category2Id, level: 2 });
       // 当选中一级分类时，拿着一级分类得id去请求二级分类
       const result = await this.$API.category.getCategory3(this.cateForm.category2Id);
       if (result.code === 20000 || result.code === 200) {
@@ -74,7 +74,7 @@ export default {
     },
     // 改变三级分类
     handlerCatrgory3() {
-      this.$emit('changeCategory');
+      this.$emit('changeCategory', { categoryId: this.cateForm.category3Id, level: 3 });
     }
   }
 
