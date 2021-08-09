@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="" :model="cateForm" :inline=" true" label-width="80px" class="demo-form-inline">
+  <el-form :disabled='!isShowList' ref="" :model="cateForm" :inline=" true" label-width="80px" class="demo-form-inline">
     <el-form-item label="一级分类">
       <el-select v-model="cateForm.category1Id" placeholder="请选择" @change="handlerCatrgory1">
         <el-option :value="cate1.id" :label="cate1.name" v-for="cate1 in category1List" :key="cate1.id"></el-option>
@@ -21,6 +21,7 @@
 <script>
 export default {
   name: 'category',
+  props: ['isShowList'],
   data() {
     return {
       category1List: [],

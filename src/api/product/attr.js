@@ -15,7 +15,7 @@ export default {
   // GET /admin/product/getAttrValueList/{attrId}
   // getAttrValueList
   // POST /admin/product/saveAttrInfo
-  saveAttrInfo() {
-    return request.post(`/admin/product/saveAttrInfo`);
+  saveAttrInfo(attr) {
+    return request.post(`/admin/product/saveAttrInfo`,attr)
   }
 };

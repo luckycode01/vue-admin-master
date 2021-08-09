@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card>
-      <Category @changeCategory="changeCategory"></Category>
+      <Category @changeCategory="changeCategory" :isShowList='isShowList'></Category>
     </el-card>
     <el-card style="margin-top:20px;">
       <div v-show="isShowList">
@@ -18,8 +18,9 @@
             <template slot-scope="{ row }">
               <HintButton type="warning" size="mini" icon="el-icon-edit" @click="showUpdateDiv(row)" title="编辑">
               </HintButton>
-              <HintButton type="danger" size="mini" icon="el-icon-delete" title="删除">
-              </HintButton>
+              <el-popconfirm :title="`确定删除${row.attrName}吗？`" @onConfirm='deleteAttr(row)'>
+                <HintButton slot="reference" type="danger" size="mini" icon="el-icon-delete" title="删除"></HintButton>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -42,13 +43,14 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" width="width">
-            <template slot-scope="{ row }">
-              <HintButton type="danger" size="mini" icon="el-icon-delete" title="删除">
-              </HintButton>
+            <template slot-scope="{ row , $index}">
+              <el-popconfirm :title="`确定删除${row.valueName}吗？`" @onConfirm='attrForm.attrValueList.splice($index,1)'>
+                <HintButton slot="reference" type="danger" size="mini" icon="el-icon-delete" title="删除"></HintButton>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary" icon="el-icon-plus" @click="showAddDiv" :disabled="attrForm.attrValueList.length === 0">保存</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="saveAttrInfo" :disabled="attrForm.attrValueList.length === 0">保存</el-button>
         <el-button @click="isShowList = true">取消</el-button>
       </div>
     </el-card>
@@ -72,7 +74,7 @@ export default {
       attrForm: {
         attrName: "", //属性名
         attrValueList: [],
-        categoryId: 0, //属性Id 三级分类id
+        categoryId: '', //属性Id 三级分类id
         categoryLevel: 3 //表示是几级分类，默认是三级
         // id: 0 //添加的时候没有id
       }
@@ -115,7 +117,7 @@ export default {
       this.attrForm = {
         attrName: "", //属性名
         attrValueList: [],
-        categoryId: 0, //属性Id 三级分类id
+        categoryId: this.category3Id, //属性Id 三级分类id
         categoryLevel: 3 //表示是几级分类，默认是三级
         // id: 0 //添加的时候没有id
       }
@@ -162,6 +164,47 @@ export default {
       this.$nextTick(() => {
         this.$refs[index].focus();
       })
+    },
+    // 删除属性
+    async deleteAttr(row) {
+      try {
+        const result = await this.$API.attr.deleteAttr(row.id);
+        if (result.code === 200 || result.code === 20000) {
+          this.$message.success("删除属性成功");
+          this.getAttrList();
+        } else {
+          this.$message.error("删除属性失败");
+        }
+      } catch (error) {
+        this.$message.error('请求删除失败');
+      }
+    },
+    // 保存属性
+    async saveAttrInfo() {
+      // 收集参数
+      const attr = this.attrForm;
+      // 处理参数 去除属性值为空的项，和属性值的isEdit属性
+      attr.attrValueList = attr.attrValueList.filter(item => {
+        if (item.valueName) {
+          delete item.isEdit;
+          return true;
+        }
+      })
+      // 属性值为空时，不发送请求
+      if (attr.attrValueList.length === 0) return this.$message.error('请为该属性添加属性值')
+      // 发请求
+      try {
+        const result = await this.$API.attr.saveAttrInfo(attr);
+        if (result.code === 200 || result.code === 20000) {
+          this.$message.success('保存属性成功');
+          this.isShowList = true;
+          this.getAttrList();
+        } else {
+          this.$message.error('保存属性失败')
+        }
+      } catch (error) {
+        this.$message.error('请求失败')
+      }
     }
   }
 };
