@@ -1,13 +1,109 @@
 <template>
-  <div>Spu</div>
+  <div>
+    <el-card>
+      <Category @changeCategory="changeCategory" :isShowList='isShowList'></Category>
+    </el-card>
+    <el-card style="margin-top:20px;">
+      <!-- sku列表显示 -->
+      <div v-show="!isShowSpuForm && !isShowSkuForm">
+        <el-button type="primary" icon="el-icon-plus" @click="showAddSpuForm">添加SPU</el-button>
+        <el-table :data="spuList" style="width: 100%;margin-bottom:20px;" border>
+          <el-table-column label="序号" align="center" width="80" type="index"></el-table-column>
+          <el-table-column prop="spuName" label="SPU名称" width="width"></el-table-column>
+          <el-table-column prop="description" label="SPU描述" width="width"></el-table-column>
+          <el-table-column label="操作" width="width">
+            <template>
+              <HintButton @click="showAddSkuForm" title="添加SKU" type="success" icon="el-icon-plus" size="mini"></HintButton>
+              <HintButton @click="showUpdateSpuForm" title="修改SPU" type="warning" icon="el-icon-edit" size="mini"></HintButton>
+              <HintButton title="查看SPU的SKU列表" type="info" icon="el-icon-info" size="mini"></HintButton>
+              <HintButton title="删除SPU" type="danger" icon="el-icon-delete" size="mini"></HintButton>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页器 -->
+        <el-pagination @size-change="handleSizeChange" @current-change="getSpuList" style="text-align:center;" background :current-page="page" :pager-count="7" :page-sizes="[2, 3, 5, 7]" :page-size="limit" layout=" prev, pager, next, jumper,->,sizes,total" :total="total">
+        </el-pagination>
+      </div>
+      <!-- 添加或SPU -->
+      <SpuForm v-show="isShowSpuForm" :isShowSpuForm.sync='isShowSpuForm' ref="spu"></SpuForm>
+      <!-- 添加SKU -->
+      <SkuForm v-show="isShowSkuForm" :isShowSkuForm.sync='isShowSkuForm' ref="sku"></SkuForm>
+    </el-card>
+  </div>
 </template>
 
 <script>
+import SpuForm from '@/views/product/Spu/SpuForm';
+import SkuForm from '@/views/product/Spu/SkuForm'
 export default {
   name: 'Spu',
+  components: {
+    SpuForm,
+    SkuForm,
+  },
+  data() {
+    return {
+      isShowList: true,  //控制三级联动是否可用;
+      category1Id: '',
+      category2Id: '',
+      category3Id: '',
+      spuList: [],
+
+      page: 1, //当前页
+      limit: 2, //每页显示的数量
+      total: 0, //总数
+
+      isShowSpuForm: false, //显示添加，或修改spu
+      isShowSkuForm: false, //显示添加sku
+    }
+  },
+  methods: {
+    changeCategory({ categoryId, level }) {
+      if (level == 1) {
+        this.category2Id = '';
+        this.category3Id = '';
+        this.spuList = [];
+        this.category1Id = categoryId;
+      } else if (level == 2) {
+        this.category3Id = '';
+        this.spuList = [];
+        this.category2Id = categoryId;
+      } else {
+        this.category3Id = categoryId;
+        this.getSpuList();
+      }
+    },
+    async getSpuList(pager = 1) {
+      this.page = pager;
+      const { page, category3Id, limit } = this;
+      const result = await this.$API.spu.getList(page, limit, category3Id);
+      if (result.code === 20000 || result.code === 200) {
+        this.spuList = result.data.records;
+        this.total = result.data.total;
+      }
+    },
+    // 改变每页显示的数量
+    handleSizeChange(size) {
+      this.limit = size;
+      this.getSpuList();
+    },
+    // 点击 切换到更新spu
+    showUpdateSpuForm() {
+      this.isShowSpuForm = true;
+      this.$refs.spu.getUpdateSpuFormInitData();
+    },
+    // 点击切换到添加spu
+    showAddSpuForm() {
+      this.isShowSpuForm = true;
+      this.$refs.spu.getAddSpuFormInitData();
+    },
+    // 点击切换到添加sku
+    showAddSkuForm() {
+      this.isShowSkuForm = true;
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-
 </style>
