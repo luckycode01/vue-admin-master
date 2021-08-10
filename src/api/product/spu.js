@@ -4,11 +4,6 @@
 import request from "@/utils/request";
 
 export default {
-  // 获取品牌
-  // /admin/product/baseTrademark/getTrademarkLis
-  getTrademarkLis() {
-    return request.get("/admin/product/baseTrademark/getTrademark");
-  },
   /*
   获取所有的销售属性列表,所有的销售属性列表是商家一开始就规定的好的 多少个已经规定死了
   // 后期我们还有spu自己的销售属性，这个销售属性是从所有的销售属性里面挑选几个作为自己的
