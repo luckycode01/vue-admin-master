@@ -34,7 +34,7 @@
         <el-table-column type="index" label="序号" width="80"></el-table-column>
         <el-table-column prop="saleAttrName" label="属性名" width="140"></el-table-column>
         <el-table-column label="属性值名称列表" width="width">
-          <template slot-scope="{row,$index}">
+          <template slot-scope="{row}">
             <el-tag type='success' closable @close="row.spuSaleAttrValueList.splice(index,1)" v-for="spuSaleAttrValue in row.spuSaleAttrValueList" :key="spuSaleAttrValue.id" style="margin:0 0 10px 10px">{{spuSaleAttrValue.saleAttrValueName}}</el-tag>
             <el-input v-if="row.isEdit" v-model="row.saleAttrValueName" ref="saveTagInput" class="input-new-tag" size="small" @keyup.enter.native="handleInputConfirm(row)" @blur="handleInputConfirm(row)"></el-input>
             <el-button v-else class="button-new-tag" size="small" @click="showInput(row)">+ New Tag</el-button>
