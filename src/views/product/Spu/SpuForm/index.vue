@@ -41,7 +41,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="140">
-          <template slot-scope="{row,$index}">
+          <template slot-scope="{$index}">
             <HintButton title="删除" type="danger" icon="el-icon-delete" size="mini" @click="spuInfo.spuSaleAttrList.splice($index,1)"></HintButton>
           </template>
         </el-table-column>
