@@ -13,10 +13,12 @@
           <el-table-column prop="description" label="SPU描述" width="width"></el-table-column>
           <el-table-column label="操作" width="width">
             <template slot-scope="{row}">
-              <HintButton @click="showAddSkuForm" title="添加SKU" type="success" icon="el-icon-plus" size="mini"></HintButton>
+              <HintButton @click="showAddSkuForm(row)" title="添加SKU" type="success" icon="el-icon-plus" size="mini"></HintButton>
               <HintButton @click="showUpdateSpuForm(row)" title="修改SPU" type="warning" icon="el-icon-edit" size="mini"></HintButton>
               <HintButton title="查看SPU的SKU列表" type="info" icon="el-icon-info" size="mini"></HintButton>
-              <HintButton title="删除SPU" type="danger" icon="el-icon-delete" size="mini"></HintButton>
+              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteSpu(row)">
+                <HintButton slot="reference" title="删除SPU" type="danger" icon="el-icon-delete" size="mini"></HintButton>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -34,7 +36,7 @@
 
 <script>
 import SpuForm from '@/views/product/Spu/SpuForm';
-import SkuForm from '@/views/product/Spu/SkuForm'
+import SkuForm from '@/views/product/Spu/SkuForm';
 export default {
   name: 'Spu',
   components: {
@@ -98,8 +100,9 @@ export default {
       this.$refs.spu.getAddSpuFormInitData(this.category3Id);
     },
     // 点击切换到添加sku
-    showAddSkuForm() {
+    showAddSkuForm(row) {
       this.isShowSkuForm = true;
+      this.$refs.sku.getAddSkuFormInitData(row,this.category1Id,this.category2Id);
     },
     saveSuccess(id) {
       // 如果id不是undefin说明是更新，获取列表数据在当前页
@@ -108,7 +111,18 @@ export default {
       } else {
         this.getSpuList();
       }
-
+    },
+    // 删除SPU
+    async deleteSpu(row) {
+      try {
+        const res = await this.$API.spu.remove(row.id);
+        if (res.code === 200 || res.code === 20000) {
+          this.$message.success('删除成功');
+          this.getSpuList(this.spuList.length > 1 ? this.page : this.page - 1);
+        }
+      } catch (error) {
+        this.$message.error('请求失败')
+      }
     }
   }
 }
