@@ -26,7 +26,7 @@
         </el-pagination>
       </div>
       <SpuForm ref="spu" @saveSuccess='saveSuccess' v-show="isShowSpuForm" :isShowSpuForm.sync='isShowSpuForm'></SpuForm>
-      <SkuForm v-show="isShowSkuForm"></SkuForm>
+      <SkuForm ref='sku' v-show="isShowSkuForm" :isShowSkuForm.sync="isShowSkuForm"></SkuForm>
 
     </el-card>
   </div>
@@ -108,6 +108,7 @@ export default {
     // 添加SKU
     showAddSkuForm(row) {
       this.isShowSkuForm = true;
+      this.$refs.sku.getAddSkuInfoData(row, this.category1Id, this.category2Id);
     },
     saveSuccess(id) {
       if (id)
