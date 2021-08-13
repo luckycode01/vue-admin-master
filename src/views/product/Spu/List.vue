@@ -15,7 +15,7 @@
             <template slot-scope="{row}">
               <HintButton @click="showAddSkuForm(row)" title="添加SKU" type="success" icon="el-icon-plus" size="mini"></HintButton>
               <HintButton @click="showUpdateSpuForm(row)" title="修改SPU" type="warning" icon="el-icon-edit" size="mini"></HintButton>
-              <HintButton title="查看SPU的SKU列表" type="info" icon="el-icon-info" size="mini"></HintButton>
+              <HintButton title="查看SPU的SKU列表" type="info" icon="el-icon-info" size="mini" @click="showSkuInfoDialog(row)"></HintButton>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteSpu(row)">
                 <HintButton slot="reference" title="删除SPU" type="danger" icon="el-icon-delete" size="mini"></HintButton>
               </el-popconfirm>
@@ -31,6 +31,19 @@
       <!-- 添加SKU -->
       <SkuForm v-show="isShowSkuForm" :isShowSkuForm.sync='isShowSkuForm' ref="sku"></SkuForm>
     </el-card>
+
+    <el-dialog style="text-align: center" :title="`${spu.spuName}的SKU列表`" :before-close="closeDialog" :visible.sync="dialogTableVisible">
+      <el-table :data="skuInfoList" v-loading="loading">
+        <el-table-column property="skuName" label="名称" width="with"></el-table-column>
+        <el-table-column property="price" label="价格" width="with"></el-table-column>
+        <el-table-column property="weight" label="重量" width="with"></el-table-column>
+        <el-table-column label="默认图片" width="with">
+          <template slot-scope="{row}">
+            <img :src="row.skuDefaultImg" alt="" width="100px" height="100px">
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -45,6 +58,8 @@ export default {
   },
   data() {
     return {
+      spu: {},
+
       isShowList: true,  //控制三级联动是否可用;
       category1Id: '',
       category2Id: '',
@@ -57,6 +72,11 @@ export default {
 
       isShowSpuForm: false, //显示添加，或修改spu
       isShowSkuForm: false, //显示添加sku
+
+      // sku列表对话框
+      dialogTableVisible: false,
+      skuInfoList: [],
+      loading: false, //加载中
     }
   },
   methods: {
@@ -84,6 +104,23 @@ export default {
         this.total = result.data.total;
       }
     },
+    // 查看SPU的SKU列表
+    async showSkuInfoDialog(row) {
+      this.spu = row;
+      this.dialogTableVisible = true;
+
+      this.loading = true;
+      try {
+        const res = await this.$API.sku.getListBySpuId(row.id);
+        if (res.code === 200 || res.code === 20000) {
+          this.skuInfoList = res.data;
+        }
+      } catch (error) {
+        this.$message.error('请求失败')
+      }
+      this.loading = false;
+    },
+
     // 改变每页显示的数量
     handleSizeChange(size) {
       this.limit = size;
@@ -102,7 +139,7 @@ export default {
     // 点击切换到添加sku
     showAddSkuForm(row) {
       this.isShowSkuForm = true;
-      this.$refs.sku.getAddSkuFormInitData(row,this.category1Id,this.category2Id);
+      this.$refs.sku.getAddSkuFormInitData(row, this.category1Id, this.category2Id);
     },
     saveSuccess(id) {
       // 如果id不是undefin说明是更新，获取列表数据在当前页
@@ -123,6 +160,21 @@ export default {
       } catch (error) {
         this.$message.error('请求失败')
       }
+    },
+    // 关闭对话框
+    closeDialog(done) {
+      this.skuInfoList = [];
+      this.loading = false;
+      done();
+    }
+  },
+
+  watch: {
+    isShowSpuForm(newValue) {
+      this.isShowList = !newValue;
+    },
+    isShowSkuForm(newValue) {
+      this.isShowList = !newValue;
     }
   }
 }
