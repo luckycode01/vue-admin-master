@@ -14,6 +14,7 @@ import router from "./router";
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
+import "@/plugins/vcharts";
 
 //注册全局组件
 import Category from "@/components/Category";
