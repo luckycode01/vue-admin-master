@@ -2,7 +2,7 @@
   <el-form
     ref=""
     :model="cateForm"
-    label-width="80px"
+    label-width="70px"
     :inline="true"
     :disabled="!isShowList"
   >
