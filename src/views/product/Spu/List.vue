@@ -14,7 +14,7 @@
             <template slot-scope="{ row}">
               <HintButton title='添加SKU' type='success' icon='el-icon-plus' size='mini' @click="showAddSkuForm(row)"></HintButton>
               <HintButton title='修改SPU' type='warning' icon='el-icon-edit' size='mini' @click='showUpdateSkuForm(row)'></HintButton>
-              <HintButton title='查看SPU的SKU列表' type='info' icon='el-icon-info' size='mini'></HintButton>
+              <HintButton title='查看SPU的SKU列表' type='info' icon='el-icon-info' size='mini' @click="showShowSkuInfo(row)"></HintButton>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm='deleteSpu(row)'>
                 <HintButton slot="reference" title='删除SPU' type='danger' icon='el-icon-delete' size='mini'></HintButton>
               </el-popconfirm>
@@ -29,6 +29,19 @@
       <SkuForm ref='sku' v-show="isShowSkuForm" :isShowSkuForm.sync="isShowSkuForm"></SkuForm>
 
     </el-card>
+
+    <el-dialog :title='`${spu.spuName}的sku列表`' :visible.sync="dialogTableVisible">
+      <el-table :data="skuInfoList" style='width:100%'>
+        <el-table-column property="skuName" label="名称" width="width"></el-table-column>
+        <el-table-column property="price" label="价格" width="width"></el-table-column>
+        <el-table-column property="weight" label="重量" width="width"></el-table-column>
+        <el-table-column label="默认图片" width="width">
+          <template slot-scope="{ row}">
+            <img :src="row.skuDefaultImg" alt="" width="80px" height="80px">
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -60,6 +73,10 @@ export default {
       // 是否显示SPUForm或SKUForm
       isShowSpuForm: false,
       isShowSkuForm: false,
+
+      dialogTableVisible: false, //显示sku列表对话框
+      skuInfoList: [], //sku列表
+      spu: {},
     };
   },
   methods: {
@@ -79,6 +96,15 @@ export default {
         this.category3Id = categoryId;
         this.getSpuList();
       }
+    },
+    async showShowSkuInfo(row) {
+      this.spu = row;
+      // 获取sku列表
+      const result = await this.$API.sku.getListBySpuId(row.id);
+      if (result.code === 200 || result.code === 20000)
+        this.skuInfoList = result.data;
+
+      this.dialogTableVisible = true;
     },
     async getSpuList(pager = 1) {
       this.page = pager;
