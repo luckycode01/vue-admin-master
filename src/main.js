@@ -18,13 +18,17 @@ import "@/plugins/vcharts";
 
 //注册全局组件
 import Category from "@/components/Category";
-Vue.component("Category", Category);
 // 按钮组件二次封装
 import HintButton from "@/components/HintButton";
-Vue.component("HintButton", HintButton);
 
-import * as API from "@/api/product/index";
+import * as API from "@/api/index";
+import { buttonPower } from "@/utils/btnPowerManage";
+
+Vue.component("HintButton", HintButton);
+Vue.component("Category", Category);
+
 Vue.prototype.$API = API;
+Vue.prototype.$buttonPower = buttonPower;
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
