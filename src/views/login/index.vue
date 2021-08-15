@@ -41,8 +41,8 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+      if (value.length < 5 || value.length > 10) {
+        callback(new Error('请输入5到10位密码'))
       } else {
         callback()
       }
@@ -88,18 +88,25 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          // this.loading = true
+          // this.$store.dispatch('user/login', this.loginForm).then(() => {
+          //   this.$router.push({ path: this.redirect || '/' })
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+
+          try {
+            this.loading = true;
+            await this.$store.dispatch('user/login', this.loginForm);
+            this.$message.success('登录成功');
             this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+            this.loading = false;
+          } catch (error) {
+            this.loading = false;
+          }
         }
       })
     }
