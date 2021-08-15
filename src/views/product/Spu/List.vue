@@ -156,6 +156,14 @@ export default {
         this.$message.error('请求失败');
       }
     }
+  },
+  watch: {
+    isShowSpuForm(newValue) {
+      this.isShowList = !newValue;
+    },
+    isShowSkuForm(newValue) {
+      this.isShowList = !newValue;
+    }
   }
 };
 </script>
