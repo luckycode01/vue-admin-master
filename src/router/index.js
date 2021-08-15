@@ -55,10 +55,60 @@ export const constantRoutes = [
         meta: { title: "首页", icon: "dashboard" }
       }
     ]
+  }
+];
+export const allAsyncRoutes = [
+  //权限数据管理相关的路由
+  {
+    name: "Acl",
+    path: "/acl",
+    component: Layout,
+    redirect: "/acl/user/list",
+    meta: {
+      title: "权限管理",
+      icon: "el-icon-lock"
+    },
+    children: [
+      {
+        name: "User",
+        path: "user/list",
+        component: () => import("@/views/acl/user/list"),
+        meta: {
+          title: "用户管理"
+        }
+      },
+      {
+        name: "Role",
+        path: "role/list",
+        component: () => import("@/views/acl/role/list"),
+        meta: {
+          title: "角色管理"
+        }
+      },
+      {
+        name: "RoleAuth",
+        path: "role/auth/:id",
+        component: () => import("@/views/acl/role/roleAuth"),
+        meta: {
+          activeMenu: "/acl/role/list",
+          title: "角色授权"
+        },
+        hidden: true
+      },
+      {
+        name: "Permission",
+        path: "permission/list",
+        component: () => import("@/views/acl/permission/list"),
+        meta: {
+          title: "菜单管理"
+        }
+      }
+    ]
   },
   {
     path: "/product",
     component: Layout,
+    name: "Product",
     meta: { title: "商品管理", icon: "el-icon-s-shop" },
     children: [
       {
@@ -87,10 +137,30 @@ export const constantRoutes = [
       }
     ]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: "*", redirect: "/404", hidden: true }
+  {
+    path: "/test",
+    component: Layout,
+    name: "MTest",
+    meta: { title: "测试管理", icon: "el-icon-s-shop" },
+    children: [
+      {
+        path: "mtest1",
+        name: "Mtest1",
+        component: () => import("@/views/test/Mtest1"),
+        meta: { title: "测试一" }
+      },
+      {
+        path: "mtest2",
+        name: "Mtest2",
+        component: () => import("@/views/test/Mtest2"),
+        meta: { title: "测试二" }
+      }
+    ]
+  }
 ];
+
+// 404 page must be placed at the end !!!
+export const anyRoutes = { path: "*", redirect: "/404", hidden: true };
 
 const createRouter = () =>
   new Router({

@@ -11,12 +11,15 @@ import "@/styles/index.scss"; // global css
 import App from "./App";
 import store from "./store";
 import router from "./router";
+import "@/plugins/vcharts";
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
 
-import * as API from "./api/product";
+import * as API from "./api";
 Vue.prototype.$API = API;
+import { btnPowerManage } from "./utils/btnPowerManage";
+Vue.prototype.$btnPowerManage = btnPowerManage;
 
 // 全局组件
 import Category from "@/components/Category";
