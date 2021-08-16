@@ -1,19 +1,19 @@
 <template>
   <div>
-    <el-button type="primary" icon="el-icon-plus" @click="showAddDialog"
+    <el-button type="primary" icon="el-icon-plus" @click="showAddDialog" 
       >添加</el-button
     >
 
-    <!-- element-ui表格用的很多 
+    <!-- element-ui表格用的很多
     eltable 回车会出现表格自动带一个列
     看我们需要几个列，拷贝几个列-->
 
     <!-- el-table标签里面属性是表格属性，一般用的比较多的
-    设定表格是否有边框   添加border 
+    设定表格是否有边框   添加border
     设定让表格显示的数据  data可以设定表格要展示的数据，数据格式必须是数组-->
 
     <!-- el-table-column标签里面属性是列的属性
-    prop属性代表是显示的数据对象的哪个属性 
+    prop属性代表是显示的数据对象的哪个属性
     labels设定这一列的表头名称用的
     width设定这一列的宽度
     type 设定这列的类型  type=index 代表是序号列，序号会自动填上
@@ -21,7 +21,7 @@
     -->
 
     <!-- table展示动态数据依赖的就是data属性，这个数据必须是数组
-    当我们data有数据的时候，那么会默认把data的数据分别给每个列都传递一份 
+    当我们data有数据的时候，那么会默认把data的数据分别给每个列都传递一份
     每个列组件内部是在展示我们的列表，说白了就是vfor，至于说展示的是这个列表当中对象的哪个属性
     我们需要自己通过prop指定
     内部只是展示我们的数据，而如果这个数据是需要额外的结构，那么内部说了不算，又外部（父组件）说了算
