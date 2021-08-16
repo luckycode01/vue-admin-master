@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="primary" icon="el-icon-plus" @click="showAddDialog" 
+    <el-button type="primary" icon="el-icon-plus" @click="showAddDialog"
       >添加</el-button
     >
 
@@ -34,12 +34,12 @@
       <el-table-column prop="logoUrl" label="品牌LOGO" width="width">
         <!-- row代表的就是当前遍历的这一项，如果你不知道row是谁，就看data是哪个数组 -->
         <!-- data里面的某一项就是这个row -->
-        <template slot-scope="{ row, $index }">
+        <template slot-scope="{ row }">
           <img :src="row.logoUrl" alt="" style="width: 80px; height: 60px" />
         </template>
       </el-table-column>
       <el-table-column prop="prop" label="操作" width="width">
-        <template slot-scope="{ row, $index }">
+        <template slot-scope="{ row }">
           <el-button
             type="warning"
             icon="el-icon-edit"
