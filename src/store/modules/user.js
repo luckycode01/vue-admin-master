@@ -12,7 +12,8 @@ import cloneDeep from "lodash/cloneDeep";
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    // token: getToken(),
+    token: localStorage.getItem('token_key'),
     name: "",
     avatar: "",
     buttons: [],
@@ -84,7 +85,8 @@ const actions = {
       // 保存token到vueX中
       commit("SET_TOKEN", res.data.token);
       // 保存token到本地存储
-      setToken(res.data.token);
+      // setToken(res.data.token);
+      localStorage.setItem("token_key", res.data.token);
       return "ok";
     } else {
       return Promise.reject(new Error("failed"));
@@ -160,7 +162,8 @@ const actions = {
     const res = await logout(state.token);
     if (res.code === 200 || res.code === 20000) {
       // 删除本地存储的token
-      removeToken(); // must remove  token  first
+      // removeToken(); // must remove  token  first
+      localStorage.removeItem("token_key");
       // 重置路由器
       resetRouter();
       // 重置store中的用户信息
@@ -180,7 +183,8 @@ const actions = {
   //   });
   // }
   async resetToken({ commit }) {
-    await removeToken(); // must remove  token  first
+    // await removeToken(); // must remove  token  first
+    await localStorage.removeItem("token_key");
     await commit("RESET_STATE");
   }
 };

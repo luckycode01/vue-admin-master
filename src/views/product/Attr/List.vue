@@ -7,56 +7,27 @@
     <el-card style="margin-top: 20px">
       <!-- 这个是列表页 -->
       <div v-show="isShowList">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          @click="showAddDiv"
-          :disabled="!category3Id"
-          >添加属性</el-button
-        >
+        <el-button type="primary" icon="el-icon-plus" @click="showAddDiv" :disabled="!category3Id">添加属性</el-button>
         <el-table :data="attrList" border style="width: 100%">
           <el-table-column type="index" align="center" label="序号" width="80">
           </el-table-column>
           <el-table-column prop="attrName" label="属性名称" width="150">
           </el-table-column>
-          <el-table-column
-            prop="attrValueList"
-            label="属性值列表"
-            width="width"
-          >
+          <el-table-column prop="attrValueList" label="属性值列表" width="width">
             <template slot-scope="{ row, $index }">
-              <el-tag
-                type="success"
-                v-for="(attrValue, index) in row.attrValueList"
-                :key="attrValue.id"
-              >
+              <el-tag type="success" v-for="(attrValue, index) in row.attrValueList" :key="attrValue.id">
                 {{ attrValue.valueName }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="150">
             <template slot-scope="{ row, $index }">
-              <HintButton
-                type="warning"
-                icon="el-icon-edit"
-                size="mini"
-                title="修改"
-                @click="showUpdateDiv(row)"
-              ></HintButton>
+              <HintButton type="warning" icon="el-icon-edit" size="mini" title="修改" @click="showUpdateDiv(row)"></HintButton>
 
-              <el-popconfirm
-                :title="`你确定删除${row.attrName}吗？`"
-                @onConfirm="deleteAttr(row)"
-              >
-                <HintButton
-                  slot="reference"
-                  type="danger"
-                  icon="el-icon-delete"
-                  size="mini"
-                  title="删除"
-                ></HintButton>
+              <el-popconfirm :title="`你确定删除${row.attrName}吗？`" @onConfirm="deleteAttr(row)">
+                <HintButton slot="reference" type="danger" icon="el-icon-delete" size="mini" title="删除"></HintButton>
               </el-popconfirm>
-              
+
             </template>
           </el-table-column>
         </el-table>
@@ -65,71 +36,31 @@
       <div v-show="!isShowList">
         <el-form :inline="true" :model="attrForm">
           <el-form-item label="属性名">
-            <el-input
-              v-model="attrForm.attrName"
-              placeholder="请输入属性名"
-            ></el-input>
+            <el-input v-model="attrForm.attrName" placeholder="请输入属性名"></el-input>
           </el-form-item>
         </el-form>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          @click="addAttrValue"
-          :disabled="!attrForm.attrName"
-          >添加属性值</el-button
-        >
+        <el-button type="primary" icon="el-icon-plus" @click="addAttrValue" :disabled="!attrForm.attrName">添加属性值</el-button>
         <el-button @click="isShowList = true">取消</el-button>
-        <el-table
-          border
-          :data="attrForm.attrValueList"
-          style="width: 100%; margin: 20px 0"
-        >
+        <el-table border :data="attrForm.attrValueList" style="width: 100%; margin: 20px 0">
           <el-table-column type="index" align="center" label="序号" width="80">
           </el-table-column>
           <el-table-column prop="prop" label="属性值名称" width="width">
             <template slot-scope="{ row, $index }">
               <!-- 根据每个属性值的模式数据标识isEdit显示不同的东西 -->
-              <el-input
-                :ref="$index"
-                v-if="row.isEdit"
-                v-model="row.valueName"
-                placeholder="请输入属性值名称"
-                @blur="toLook(row)"
-                @keyup.enter.native="toLook(row)"
-                size="mini"
-              ></el-input>
-              <span
-                style="display: block; width: 100%"
-                v-else
-                @click="toEdit(row, $index)"
-                >{{ row.valueName }}</span
-              >
+              <el-input :ref="$index" v-if="row.isEdit" v-model="row.valueName" placeholder="请输入属性值名称" @blur="toLook(row)" @keyup.enter.native="toLook(row)" size="mini"></el-input>
+              <span style="display: block; width: 100%" v-else @click="toEdit(row, $index)">{{ row.valueName }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{ row, $index }">
               <!-- 点击确定需要从属性值列表当中把当前的这一项删除 -->
-              <el-popconfirm
-                :title="`你确定删除${row.valueName}吗？`"
-                @onConfirm="attrForm.attrValueList.splice($index,1)"
-              >
-                <HintButton
-                  slot="reference"
-                  type="danger"
-                  icon="el-icon-delete"
-                  size="mini"
-                  title="删除"
-                ></HintButton>
+              <el-popconfirm :title="`你确定删除${row.valueName}吗？`" @onConfirm="attrForm.attrValueList.splice($index,1)">
+                <HintButton slot="reference" type="danger" icon="el-icon-delete" size="mini" title="删除"></HintButton>
               </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
-        <el-button
-          type="primary"
-          :disabled="attrForm.attrValueList.length === 0"
-          @click="save"
-          >保存</el-button
-        >
+        <el-button type="primary" :disabled="attrForm.attrValueList.length === 0" @click="save">保存</el-button>
         <el-button @click="isShowList = true">取消</el-button>
       </div>
     </el-card>
@@ -307,51 +238,51 @@ export default {
       row.isEdit = false;
     },
     // 点击保存按钮，请求保存操作（添加或者修改属性的操作）
-    async save(){
+    async save() {
       // 1、获取请求参数
       let attr = this.attrForm
       // 2、整理参数
       //    当有多个操作操作的是同一个数组，并且都有遍历操作，那么此时就想能不能合并在一起处理
-            // 1、属性值名称如果为空串，从属性值列表当中去除
-            // 2、属性值当中去除isEdit属性
+      // 1、属性值名称如果为空串，从属性值列表当中去除
+      // 2、属性值当中去除isEdit属性
       attr.attrValueList = attr.attrValueList.filter(item => {
-        if(item.valueName !== ''){
+        if (item.valueName !== '') {
           delete item.isEdit
           return true
         }
       })
-            // 3、属性值列表如果没有属性值，不发请求
-      if(attr.attrValueList.length === 0){
+      // 3、属性值列表如果没有属性值，不发请求
+      if (attr.attrValueList.length === 0) {
         this.$message.info('属性值必须至少有一个')
-        return 
+        return
       }
       // 3、发请求
       try {
         // 4、成功干啥
         const result = await this.$API.attr.addOrUpdate(attr)
-        if(result.code === 200 || result.code === 20000){
+        if (result.code === 200 || result.code === 20000) {
           // 提示
           this.$message.success('保存属性成功')
           // 回到列表页
           this.isShowList = true
           // 重新获取列表页数据
           this.getAttrList()
-        }else{
+        } else {
           this.$message.error('保存属性失败')
         }
       } catch (error) {
-         // 5、失败干啥
+        // 5、失败干啥
         this.$message.error('请求失败')
       }
     },
     // 点击列表页的删除属性按钮
-    async deleteAttr(row){
+    async deleteAttr(row) {
       try {
         const result = await this.$API.attr.delete(row.id)
-        if(result.code === 200 || result.code === 20000){
+        if (result.code === 200 || result.code === 20000) {
           this.$message.success('删除属性成功')
           this.getAttrList()
-        }else{
+        } else {
           this.$message.error('删除属性失败')
         }
       } catch (error) {
