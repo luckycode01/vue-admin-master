@@ -5,26 +5,29 @@
     </el-card>
     <el-card style="margin-top: 20px">
       <div v-show='!isShowSpuform && !isShowSkuform'>
-        <el-button type="primary" icon="el-icon-plus" @click='showAddSpuform'>添加SPU</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click='showAddSpuform' :disabled='!category3Id'>添加SPU</el-button>
         <el-table :data="spuInfoList" style="width: 100%" border>
           <el-table-column type="index" label="序号" align="center" width="80"></el-table-column>
           <el-table-column prop="spuName" label="SPU名称" width="width"></el-table-column>
           <el-table-column prop="description" label="SPU描述" width="width"></el-table-column>
           <el-table-column label="操作" width="270">
-            <template slot-scope="{ row }">
+            <template slot-scope="{ row,$index }">
               <HintButton @click="showAddSkuForm" type='success' size='mini' icon='el-icon-plus' :title="'添加SKU'"></HintButton>
               <HintButton @click="showUpdateSpuForm(row)" type='warning' size='mini' icon='el-icon-edit' :title="'修改SPU'"></HintButton>
               <HintButton type='info' size='mini' icon='el-icon-info' :title="'查看SPU的SKU列表'"></HintButton>
-              <HintButton type='danger' size='mini' icon='el-icon-delete' :title="'删除'"></HintButton>
+              <el-popconfirm :title="`确定删除属性< ${row.spuName}>吗？` " @onConfirm='deleteSpu(row,$index)'>
+                <HintButton slot="reference" type='danger' size='mini' icon='el-icon-delete' :title="'删除'"></HintButton>
+              </el-popconfirm>
+
             </template>
           </el-table-column>
         </el-table>
 
-        <el-pagination style="text-align:center" @size-change="handleSizeChange" @current-change="getSpuInfoList" :current-page="page" :page-sizes="[2, 5, 7]" :page-size="limit" :total="total" layout=" prev, pager, next, jumper, ->,sizes, total">
+        <el-pagination background style="text-align:center" @size-change="handleSizeChange" @current-change="getSpuInfoList" :current-page="page" :page-sizes="[2, 5, 7]" :page-size="limit" :total="total" layout=" prev, pager, next, jumper, ->,sizes, total">
         </el-pagination>
       </div>
 
-      <SpuForm ref="spu" v-show="isShowSpuform" :isShowSpuform.sync="isShowSpuform"></SpuForm>
+      <SpuForm ref="spu" @breakList='breakList' v-show="isShowSpuform" :isShowSpuform.sync="isShowSpuform"></SpuForm>
       <SkuForm ref='sku' v-show="isShowSkuform"></SkuForm>
     </el-card>
   </div>
@@ -113,6 +116,30 @@ export default {
         this.category2Id
       );
     },
+    // 子组件添加spu后返回父组件
+    breakList(id) {
+      // 如果传入的id存在，说明是修改页返回，不存在则是添加后返回
+      id ? this.getSpuInfoList(this.page) : this.getSpuInfoList();
+    },
+    // 删除SPU
+    async deleteSpu(row) {
+      const res = await this.$API.spu.remove(row.id);
+      if (res.code === 200 || res.code === 2000) {
+        this.$message.success("删除成功");
+        // 刷新列表
+        this.getSpuInfoList(this.spuInfoList.length > 1 ? this.page : this.page - 1);
+      } else {
+        this.$message.error("删除失败");
+      }
+    }
+  },
+  watch: {
+    isShowSpuform() {
+      return this.isShowList = !this.isShowList;
+    },
+    isShowSkuform() {
+      return this.isShowList = !this.isShowList;
+    }
   }
 }
 </script>

@@ -21,20 +21,34 @@
         </el-dialog>
       </el-form-item>
       <el-form-item label="销售属性">
-        <el-select v-model="saleAttrId" :placeholder="unSelectSaleAttrList.length>0?`还有${unSelectSaleAttrList.length}项未选择`:'没有了！！！'">
-          <el-option :label="saleAttr.name" :value="saleAttr.id" v-for="saleAttr in unSelectSaleAttrList" :key='saleAttr.id'></el-option>
+        <el-select v-model="saleAttrIdName" :placeholder="unSelectSaleAttrList.length>0?`还有${unSelectSaleAttrList.length}项未选择`:'没有了！！！'">
+          <el-option :label="saleAttr.name" :value="`${saleAttr.id}:${saleAttr.name}`" v-for="saleAttr in unSelectSaleAttrList" :key='saleAttr.id'></el-option>
         </el-select>
-        <el-button type="primary" icon="el-icon-plus" :disabled='!saleAttrId' @click="addSaleAttr">添加销售属性</el-button>
-        <el-table style="width: 100%" border>
+        <el-button type="primary" icon="el-icon-plus" :disabled='!saleAttrIdName' @click="addSaleAttr">添加销售属性</el-button>
+        <el-table style="width: 100%" border :data="spuInfo.spuSaleAttrList">
           <el-table-column type="index" label="序号" width="80"></el-table-column>
-          <el-table-column prop="prop" label="属性名" width="150"></el-table-column>
-          <el-table-column prop="prop" label="属性值列表" width="width"></el-table-column>
-          <el-table-column label="操作" width="150"></el-table-column>
+          <el-table-column prop="saleAttrName" label="属性名" width="150"></el-table-column>
+          <el-table-column label="属性值列表" width="width">
+            <template slot-scope="{row}">
+              <el-tag style="margin-right:10px" type="success" v-for="(attrValue,index) in row.spuSaleAttrValueList" :key="attrValue.id" closable @close="row.spuSaleAttrValueList.splice(index,1)">{{attrValue.saleAttrValueName}}</el-tag>
+              <el-input class="input-new-tag" v-if="row.isEdit" v-model="row.saleAttrValueName" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm(row)" @blur="handleInputConfirm(row)">
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput(row)">+添加</el-button>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="操作" width="150">
+            <template slot-scope="{row,$index}">
+              <el-popconfirm :title="`确定删除属性< ${row.saleAttrName}>吗？` " @onConfirm='spuInfo.spuSaleAttrList.splice($index,1)'>
+                <HintButton slot="reference" type='danger' size="mini" title="删除" icon='el-icon-delete'></HintButton>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
         </el-table>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">保存</el-button>
-        <el-button @click="$emit('update:isShowSpuform', false)">取消</el-button>
+        <el-button type="primary" @click="saveSpu" :disabled="spuInfo.spuSaleAttrList.length === 0">保存</el-button>
+        <el-button @click="cancel">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -54,7 +68,7 @@ export default {
       spuImageList: [], //SPU图片列表
 
       //收集销售属性id
-      saleAttrId: '',
+      saleAttrIdName: '',
 
       spuInfo: {
         tmId: '',
@@ -163,7 +177,92 @@ export default {
 
     // 添加销售属性
     addSaleAttr() {
-      
+      const [baseSaleAttrId, saleAttrName] = this.saleAttrIdName.split(':');
+      this.spuInfo.spuSaleAttrList.push({
+        baseSaleAttrId,
+        saleAttrName,
+        spuSaleAttrValueList: [],
+      })
+      this.saleAttrIdName = ''
+    },
+    //添加属性值
+    showInput(row) {
+      this.$set(row, 'isEdit', true);
+      this.$set(row, 'saleAttrValueName', '')
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.focus();
+      })
+    },
+    //失去焦点，或回车
+    handleInputConfirm(row) {
+      // 将输入的内容添加到对应数组中
+      const { baseSaleAttrId, saleAttrValueName } = row;
+      // 判断输入的是否为空
+      if (!row.saleAttrValueName) {
+        this.$message.error('请输入属性值');
+        row.isEdit = false;
+        row.saleAttrValueName = '';
+        return;
+      }
+      // 判断是否重复
+      const isRepeat = row.spuSaleAttrValueList.some(item => item.saleAttrValueName === saleAttrValueName.trim());
+      if (isRepeat) {
+        this.$message.error('当前输入的属性值重复，请重新输入');
+        row.isEdit = false;
+        row.saleAttrValueName = '';
+        return;
+      }
+      row.spuSaleAttrValueList.push({
+        baseSaleAttrId,
+        saleAttrValueName,
+      })
+      row.saleAttrValueName = ''
+      row.isEdit = false;
+    },
+    // 重置data数据
+    resetData() {
+      Object.assign(this._data, this.$options.data());
+    },
+    cancel() {
+      this.$emit('update:isShowSpuform', false);
+      this.resetData();
+    },
+    // 点击保存按钮
+    async saveSpu() {
+      const { spuInfo, spuImageList, category3Id } = this;
+      // 整理参数
+      spuInfo.category3Id = category3Id;
+      // 图片整理
+      spuInfo.spuImageList = spuImageList.map(item => {
+        return {
+          imgName: item.name,
+          imgUrl: item.imgUrl || item.response.data,
+        }
+      })
+      // 去除多余属性
+      spuInfo.spuSaleAttrList.forEach(item => {
+        delete item.isEdit;
+        delete item.saleAttrValueName;
+      })
+      // 发情求
+      try {
+        const res = await this.$API.spu.addUpdate(spuInfo);
+        if (res.code === 200 || res.code === 20000) {
+          this.$message.success('添加SPU成功');
+          // 返回列表页
+          this.$emit('update:isShowSpuform', false);
+          // 通知父组件刷新列表
+          this.$emit('breakList', spuInfo.id);
+          // 重置data的数据
+          this.resetData();
+
+        } else {
+          this.$message.error('添加spu失败')
+        }
+      } catch (error) {
+        this.$message.error('请求发送失败');
+      }
+
     }
 
   },
@@ -177,3 +276,20 @@ export default {
 </script>
 
 <style lang="scss" scoped></style>
+<style>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+</style>
